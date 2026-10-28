@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NARUTO vs SASUKE — Pertarungan Lembah Akhir</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{background:#070812 radial-gradient(1200px 600px at 50% -10%,#1b2350 0%,#070812 60%);color:#fff;
+    font-family:"Segoe UI",system-ui,Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:10px;gap:8px}
+  #wrap{position:relative;width:min(98vw,calc((100vh - 90px)*16/9),1100px);aspect-ratio:16/9;background:#000;
+    border:3px solid #2c3566;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 0 4px #0b0e22}
+  canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+  .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+    background:linear-gradient(180deg,rgba(5,6,20,.55),rgba(5,6,20,.82));z-index:20;padding:14px;text-align:center;overflow:auto}
+  .hidden{display:none!important}
+  h1.title{font-family:"Arial Black","Segoe UI Black",Arial,sans-serif;font-size:clamp(26px,5.2vw,54px);line-height:.95;letter-spacing:1px;
+    text-shadow:0 3px 0 #000,0 0 26px rgba(255,140,0,.45)}
+  h1.title .n{color:#ffb020} h1.title .vs{color:#fff;font-size:.55em;vertical-align:middle} h1.title .s{color:#7aa2ff;text-shadow:0 3px 0 #000,0 0 26px rgba(80,120,255,.5)}
+  .subtitle{color:#cfd6ff;font-size:clamp(11px,1.7vw,16px);letter-spacing:3px;text-transform:uppercase}
+  .cards{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .card{width:clamp(120px,20vw,180px);background:rgba(13,16,40,.85);border:2px solid #3a4480;border-radius:12px;padding:10px;cursor:pointer;transition:.15s}
+  .card img{width:100%;height:110px;object-fit:cover;object-position:top;border-radius:8px;background:#10142e}
+  .card:hover{transform:translateY(-2px)}
+  .card.sel-n{border-color:#ffb020;box-shadow:0 0 18px rgba(255,176,32,.55)}
+  .card.sel-s{border-color:#7aa2ff;box-shadow:0 0 18px rgba(122,162,255,.55)}
+  .card b{display:block;margin-top:6px;font-size:15px} .card span{font-size:11px;color:#aab3e8}
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
+  button.btn{font-family:inherit;font-weight:800;letter-spacing:.5px;border:0;border-radius:10px;cursor:pointer;color:#16100a;
+    background:linear-gradient(180deg,#ffd34d,#ff9d00);padding:12px 22px;font-size:clamp(13px,2vw,17px);box-shadow:0 4px 0 #9a5b00,0 8px 18px rgba(0,0,0,.45);transition:.12s}
+  button.btn:hover{filter:brightness(1.07)} button.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #9a5b00}
+  button.btn.blue{background:linear-gradient(180deg,#9db9ff,#4d73e8);color:#07102e;box-shadow:0 4px 0 #24407e,0 8px 18px rgba(0,0,0,.45)}
+  button.btn.ghost{background:rgba(30,36,80,.9);color:#dfe5ff;box-shadow:0 4px 0 #141a42}
+  .seg{display:flex;border:2px solid #3a4480;border-radius:10px;overflow:hidden}
+  .seg button{background:rgba(13,16,40,.9);color:#aab3e8;border:0;padding:9px 16px;font-weight:700;cursor:pointer;font-family:inherit}
+  .seg button.on{background:#ffb020;color:#16100a}
+  .label{font-size:12px;color:#aab3e8;letter-spacing:2px;text-transform:uppercase}
+  table.keys{border-collapse:collapse;font-size:clamp(10px,1.5vw,13.5px);background:rgba(10,12,32,.85);border-radius:10px;overflow:hidden}
+  table.keys td,table.keys th{padding:6px 10px;border-bottom:1px solid #262e5e;text-align:left}
+  table.keys th{background:#1b2350;color:#ffd34d}
+  kbd{background:#232a55;border:1px solid #46529a;border-bottom-width:3px;border-radius:5px;padding:1px 7px;font-family:inherit;font-weight:700;font-size:.92em;white-space:nowrap}
+  #topbar{position:absolute;top:8px;right:8px;z-index:15;display:flex;gap:6px}
+  #topbar button{background:rgba(10,12,32,.75);color:#fff;border:1px solid #3a4480;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:14px}
+  #loading{position:absolute;inset:0;background:#070812;z-index:40;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;color:#cfd6ff}
+  .bar{width:240px;height:12px;border:2px solid #3a4480;border-radius:8px;overflow:hidden}.bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffb020,#ff7300)}
+  #touch{position:absolute;inset:auto 0 0 0;z-index:14;display:none;justify-content:space-between;padding:8px;pointer-events:none}
+  body.touch.fighting #touch{display:flex}
+  .tgroup{display:flex;gap:8px;align-items:flex-end;pointer-events:none}
+  .tbtn{pointer-events:auto;width:54px;height:54px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(10,12,32,.55);color:#fff;
+    font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;user-select:none;touch-action:none}
+  .tbtn:active{background:rgba(255,176,32,.65)}
+  .tbtn.big{width:62px;height:62px;background:rgba(120,60,0,.55)}
+  .credit{font-size:10.5px;color:#7f89c4;max-width:760px;line-height:1.5}
+  #hint{color:#5b6699;font-size:12px;text-align:center}
+  #winnerName{font-family:"Arial Black",Arial,sans-serif;font-size:clamp(24px,4.5vw,44px)}
+  #matchend img{width:clamp(110px,18vw,170px);border-radius:12px;border:3px solid #ffb020;background:#10142e}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="game" width="960" height="540"></canvas>
+
+  <div id="topbar" class="hidden">
+    <button id="btnPause" title="Jeda (Esc)">⏸</button>
+    <button id="btnMute" title="Suara">🔊</button>
+    <button id="btnMenuTop" title="Menu utama">🏠</button>
+  </div>
+
+  <!-- MENU UTAMA -->
+  <div id="menu" class="overlay">
+    <div>
+      <h1 class="title"><span class="n">NARUTO</span> <span class="vs">VS</span> <span class="s">SASUKE</span></h1>
+      <div class="subtitle">Pertarungan Terakhir • Lembah Akhir</div>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:6px">Pilih petarungmu (mode 1 pemain vs CPU)</div>
+      <div class="cards">
+        <div class="card sel-n" id="cardNaruto">
+          <img src="assets/sprites/naruto_portrait.png" alt="Naruto">
+          <b style="color:#ffb020">Uzumaki Naruto</b><span>Mode Chakra Kurama<br>Rasengan • Rasen-Shuriken</span>
+        </div>
+        <div class="card" id="cardSasuke">
+          <img src="assets/sprites/sasuke_portrait.png" alt="Sasuke">
+          <b style="color:#7aa2ff">Uchiha Sasuke</b><span>Sharingan • Taka<br>Chidori • Katon • Kirin</span>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <span class="label">Kesulitan CPU</span>
+      <div class="seg" id="segDiff">
+        <button data-d="easy">Mudah</button><button data-d="normal" class="on">Normal</button><button data-d="hard">Sulit</button>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn" id="btnStart1P">▶ MULAI vs CPU</button>
+      <button class="btn blue" id="btnStart2P">👥 2 PEMAIN</button>
+      <button class="btn ghost" id="btnHow">❓ Cara Main</button>
+    </div>
+    <div class="credit">Fan game non-komersial. Sprite gaya Jump Ultimate Stars dari repo GitHub <i>multiverse-smash</i> &amp; Sprite Database (rip: Neimad); background Lembah Akhir dari repo <i>mission-coding/Naruto-Vs-Sasuke</i>. Naruto © Masashi Kishimoto / Shueisha / Studio Pierrot.</div>
+  </div>
+
+  <!-- CARA MAIN -->
+  <div id="howto" class="overlay hidden">
+    <h2 style="font-family:'Arial Black',Arial">CARA MAIN</h2>
+    <table class="keys">
+      <tr><th>Aksi</th><th>Pemain 1</th><th>Pemain 2</th></tr>
+      <tr><td>Jalan</td><td><kbd>A</kbd> <kbd>D</kbd></td><td><kbd>←</kbd> <kbd>→</kbd></td></tr>
+      <tr><td>Lompat</td><td><kbd>W</kbd></td><td><kbd>↑</kbd></td></tr>
+      <tr><td>Blok (tahan)</td><td><kbd>S</kbd></td><td><kbd>↓</kbd></td></tr>
+      <tr><td>Dash</td><td colspan="2">Ketuk tombol jalan <b>2×</b> cepat ke arah yang sama</td></tr>
+      <tr><td>Pukul (kombo 3×)</td><td><kbd>J</kbd></td><td><kbd>Numpad 1</kbd> / <kbd>B</kbd></td></tr>
+      <tr><td>Serangan Berat</td><td><kbd>K</kbd></td><td><kbd>Numpad 2</kbd> / <kbd>N</kbd></td></tr>
+      <tr><td>Lempar Shuriken</td><td><kbd>L</kbd></td><td><kbd>Numpad 3</kbd> / <kbd>M</kbd></td></tr>
+      <tr><td>Jutsu (30 chakra)</td><td><kbd>U</kbd></td><td><kbd>Numpad 4</kbd> / <kbd>,</kbd></td></tr>
+      <tr><td>Ultimate (100 chakra)</td><td><kbd>I</kbd></td><td><kbd>Numpad 5</kbd> / <kbd>.</kbd></td></tr>
+    </table>
+    <div style="max-width:640px;font-size:13px;line-height:1.65;color:#cfd6ff">
+      <b>Jutsu</b> menyesuaikan jarak: dekat/sedang → <span style="color:#ffb020">Rasengan</span> / <span style="color:#7aa2ff">Chidori</span> (dash menubruk — bisa <b>bentrok</b> kalau bersamaan!),
+      jauh → <span style="color:#ffb020">Rasen-Shuriken</span> / <span style="color:#7aa2ff">Katon: Goukakyuu</span>.
+      <b>Ultimate</b>: Naruto melempar Rasen-Shuriken raksasa; Sasuke menurunkan <b>Kirin</b> — hindari dengan lompat tinggi atau dash menjauh dari tanda sasaran!
+      Menang ronde dengan menghabiskan HP lawan sebelum waktu habis. Juara = menang 2 ronde. Di HP/layar sentuh tersedia tombol virtual.
+    </div>
+    <button class="btn" id="btnBackHow">KEMBALI</button>
+  </div>
+
+  <!-- PAUSE -->
+  <div id="pause" class="overlay hidden">
+    <h2 style="font-family:'Arial Black',Arial;font-size:34px">JEDA</h2>
+    <div class="row">
+      <button class="btn" id="btnResume">▶ Lanjut</button>
+      <button class="btn blue" id="btnRestart">↻ Ulang Pertandingan</button>
+      <button class="btn ghost" id="btnMenuPause">🏠 Menu</button>
+    </div>
+  </div>
+
+  <!-- MATCH END -->
+  <div id="matchend" class="overlay hidden">
+    <div class="label">Pemenang Pertandingan</div>
+    <img id="winnerImg" src="assets/sprites/naruto_portrait.png" alt="Pemenang">
+    <div id="winnerName">Naruto MENANG!</div>
+    <div class="row">
+      <button class="btn" id="btnRematch">↻ TANDING ULANG</button>
+      <button class="btn ghost" id="btnMenuEnd">🏠 Menu Utama</button>
+    </div>
+  </div>
+
+  <!-- TOUCH -->
+  <div id="touch">
+    <div class="tgroup">
+      <div class="tbtn" data-hold="left">◀</div>
+      <div class="tbtn" data-hold="right">▶</div>
+      <div class="tbtn" data-hold="jump">▲</div>
+      <div class="tbtn" data-hold="block">🛡</div>
+    </div>
+    <div class="tgroup">
+      <div class="tbtn" data-press="throw">✦<br>SHRKN</div>
+      <div class="tbtn" data-press="heavy">BERAT</div>
+      <div class="tbtn" data-press="light">PUKUL</div>
+      <div class="tbtn" data-press="jutsu">JUTSU</div>
+      <div class="tbtn big" data-press="ult">ULTI</div>
+    </div>
+  </div>
+
+  <div id="loading"><div>Memuat sprite…</div><div class="bar"><i id="loadFill"></i></div><div id="loadPct">0%</div></div>
+</div>
+<div id="hint">Klik area game dulu agar keyboard aktif • <kbd>Esc</kbd> jeda • Menang 2 ronde untuk jadi juara</div>
+
+<script>
+"use strict";
+/* ============================================================
+   NARUTO vs SASUKE — game pertarungan 2D (Canvas + sprite sheet)
+   Sprite: strip per-aksi gaya Jump Ultimate Stars.
+   Manifest ditanam di sini agar game tetap jalan dari file://
+   (salinan assets/sprites/manifest.json, dibuat tools/build_sprites.py)
+   ============================================================ */
+const MANIFEST={"naruto":{"idle":{"file":"naruto/idle.png","frames":4,"fw":36,"fh":59},"run":{"file":"naruto/run.png","frames":6,"fw":48,"fh":50},"jump":{"file":"naruto/jump.png","frames":8,"fw":49,"fh":56},"guard":{"file":"naruto/guard.png","frames":4,"fw":41,"fh":55},"hurt":{"file":"naruto/hurt.png","frames":4,"fw":46,"fh":51},"knockdown":{"file":"naruto/knockdown.png","frames":6,"fw":63,"fh":36},"win":{"file":"naruto/win.png","frames":3,"fw":43,"fh":53},"light":{"file":"naruto/light.png","frames":4,"fw":52,"fh":53},"heavy":{"file":"naruto/heavy.png","frames":7,"fw":43,"fh":51},"up":{"file":"naruto/up.png","frames":7,"fw":51,"fh":53},"down":{"file":"naruto/down.png","frames":3,"fw":39,"fh":52},"rasengan_cast":{"file":"naruto/rasengan_cast.png","frames":11,"fw":52,"fh":52},"rasenshuriken_cast":{"file":"naruto/rasenshuriken_cast.png","frames":12,"fw":51,"fh":56},"clone_cast":{"file":"naruto/clone_cast.png","frames":7,"fw":41,"fh":55},"forward":{"file":"naruto/forward.png","frames":5,"fw":58,"fh":47}},"sasuke":{"idle":{"file":"sasuke/idle.png","frames":4,"fw":28,"fh":55},"run":{"file":"sasuke/run.png","frames":8,"fw":56,"fh":44},"jump":{"file":"sasuke/jump.png","frames":8,"fw":51,"fh":53},"dash":{"file":"sasuke/dash.png","frames":2,"fw":49,"fh":43},"hurt":{"file":"sasuke/hurt.png","frames":4,"fw":51,"fh":52},"light":{"file":"sasuke/light.png","frames":9,"fw":68,"fh":51},"heavy":{"file":"sasuke/heavy.png","frames":8,"fw":61,"fh":53},"up":{"file":"sasuke/up.png","frames":9,"fw":58,"fh":55},"air":{"file":"sasuke/air.png","frames":6,"fw":68,"fh":70},"down":{"file":"sasuke/down.png","frames":6,"fw":41,"fh":55},"throw":{"file":"sasuke/throw.png","frames":2,"fw":55,"fh":48},"chidori_cast":{"file":"sasuke/chidori_cast.png","frames":7,"fw":42,"fh":59},"intro":{"file":"sasuke/intro.png","frames":12,"fw":57,"fh":55},"sword1":{"file":"sasuke/sword1.png","frames":9,"fw":64,"fh":63},"dash_attack":{"file":"sasuke/dash_attack.png","frames":7,"fw":78,"fh":56},"fireball_cast":{"file":"sasuke/fireball_cast.png","frames":6,"fw":35,"fh":52},"chidori_lunge":{"file":"sasuke/chidori_lunge.png","frames":3,"fw":53,"fh":52},"eisou":{"file":"sasuke/eisou.png","frames":4,"fw":41,"fh":54},"kirin_cast":{"file":"sasuke/kirin_cast.png","frames":7,"fw":44,"fh":65},"chidori_run":{"file":"sasuke/chidori_run.png","frames":15,"fw":57,"fh":52},"slash":{"file":"sasuke/slash.png","frames":3,"fw":77,"fh":69},"win":{"file":"sasuke/win.png","frames":9,"fw":33,"fh":55},"knockdown":{"file":"sasuke/knockdown.png","frames":3,"fw":57,"fh":35},"dead":{"file":"sasuke/dead.png","frames":1,"fw":56,"fh":15}},"fx":{"rasengan":{"file":"fx/rasengan.png","frames":2,"fw":70,"fh":82},"rasenshuriken":{"file":"fx/rasenshuriken.png","frames":2,"fw":183,"fh":89},"fireball":{"file":"fx/fireball.png","frames":5,"fw":55,"fh":56},"explosion":{"file":"fx/explosion.png","frames":5,"fw":112,"fh":139},"kirin_dragon":{"file":"fx/kirin_dragon.png","frames":3,"fw":124,"fh":136},"chidori_spark":{"file":"fx/chidori_spark.png","frames":10,"fw":57,"fh":44},"koiten":{"file":"fx/koiten.png","frames":3,"fw":351,"fh":102},"smoke":{"file":"fx/smoke.png","frames":3,"fw":46,"fh":54},"amaterasu":{"file":"fx/amaterasu.png","frames":8,"fw":108,"fh":142}}};
+
+const W=960,H=540,GROUND=478,GRAV=2300;
+const cvs=document.getElementById('game'),ctx=cvs.getContext('2d');
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>v<a?a:v>b?b:v, rnd=(a=1,b)=> b===undefined?Math.random()*a:a+Math.random()*(b-a);
+const irnd=(a,b)=>Math.floor(rnd(a,b+1));
+
+/* ---------- muat gambar ---------- */
+const IMG={naruto:{},sasuke:{},fx:{}};
+let bgImg=new Image(),portN=new Image(),portS=new Image(),susanoImg=new Image(),shurImg=new Image();
+let loadTotal=0,loadDone=0,assetsReady=false;
+function track(img){loadTotal++;img.onload=img.onerror=()=>{loadDone++;const p=Math.round(loadDone/loadTotal*100);
+  $('loadFill').style.width=p+'%';$('loadPct').textContent=p+'%';if(loadDone>=loadTotal){assetsReady=true;$('loading').classList.add('hidden');}}}
+for(const g of['naruto','sasuke','fx'])for(const k in MANIFEST[g]){const im=new Image();track(im);im.src='assets/sprites/'+MANIFEST[g][k].file;IMG[g][k]=im;}
+track(bgImg);bgImg.src='assets/valley.jpg';
+track(portN);portN.src='assets/sprites/naruto_portrait.png';
+track(portS);portS.src='assets/sprites/sasuke_portrait.png';
+track(susanoImg);susanoImg.src='assets/sprites/fx/susanoo.png';
+track(shurImg);shurImg.src='assets/sprites/fx/shuriken.png';
+
+/* ---------- definisi animasi logis -> strip ---------- */
+/* s=nama strip, fps, loop, r=[frameAwal,frameAkhir], hold=bekukan di frame */
+const ANIMS={
+ naruto:{
+  idle:{s:'idle',fps:6,loop:1}, run:{s:'run',fps:13,loop:1},
+  jump:{s:'jump',fps:11,r:[0,3]}, fall:{s:'jump',fps:9,r:[4,7]},
+  guard:{s:'guard',hold:1}, hurt:{s:'hurt',fps:11},
+  knockdown:{s:'knockdown',fps:8}, dead:{s:'knockdown',hold:1},
+  win:{s:'win',fps:5,loop:1}, intro:{s:'win',fps:6},
+  light:{s:'light',fps:14}, forward:{s:'forward',fps:14}, up:{s:'up',fps:15},
+  heavy:{s:'heavy',fps:13}, down:{s:'down',fps:10},
+  rasengan_cast:{s:'rasengan_cast',fps:13}, rscast:{s:'rasenshuriken_cast',fps:14},
+  clone_cast:{s:'clone_cast',fps:10}, clone_cast2:{s:'clone_cast',fps:11,r:[0,4]},
+  rasengan_dash:{s:'forward',hold:2}, airatk:{s:'up',fps:15}
+ },
+ sasuke:{
+  idle:{s:'idle',fps:6,loop:1}, run:{s:'run',fps:15,loop:1},
+  jump:{s:'jump',fps:11,r:[0,3]}, fall:{s:'jump',fps:9,r:[4,7]},
+  guard:{s:'hurt',hold:0}, hurt:{s:'hurt',fps:11},
+  knockdown:{s:'knockdown',fps:8}, dead:{s:'dead',hold:0},
+  win:{s:'win',fps:6,loop:1}, intro:{s:'intro',fps:9},
+  light1:{s:'light',fps:12,r:[0,2]}, light2:{s:'light',fps:12,r:[3,5]}, light3:{s:'light',fps:12,r:[6,8]},
+  heavy:{s:'sword1',fps:15}, up:{s:'up',fps:15}, airatk:{s:'air',fps:15},
+  dash:{s:'dash',fps:12,loop:1}, dash_attack:{s:'dash_attack',fps:15},
+  throw:{s:'throw',fps:10}, chidori_cast:{s:'chidori_cast',fps:12},
+  fireball_cast:{s:'fireball_cast',fps:10}, kirin_cast:{s:'kirin_cast',fps:8},
+  chidori_run:{s:'chidori_run',fps:17,loop:1}, eisou:{s:'eisou',fps:11}
+ }
+};
+const CHAR={
+ naruto:{name:'Naruto',full:'Uzumaki Naruto',scale:3.0,speed:335,hp:1000,color:'#ffb020',port:()=>portN},
+ sasuke:{name:'Sasuke',full:'Uchiha Sasuke',scale:3.35,speed:360,hp:1000,color:'#7aa2ff',port:()=>portS}
+};
+
+/* ---------- audio (sintesis WebAudio, tanpa file eksternal) ---------- */
+let AC=null,master=null,muted=false,noiseBuf=null,musicTimer=null,musicStep=0;
+function audioInit(){ if(AC) {AC.resume&&AC.resume();return;}
+ try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.5;master.connect(AC.destination);
+  noiseBuf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;}catch(e){} }
+function tone(f0,f1,dur,type='sine',vol=.25,when=0){ if(!AC||muted)return;const t=AC.currentTime+when,o=AC.createOscillator(),g=AC.createGain();
+ o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(f1,1),t+dur);
+ g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g);g.connect(master);o.start(t);o.stop(t+dur);}
+function noise(dur,vol=.3,fType='lowpass',f0=1000,f1=100,when=0){ if(!AC||muted)return;const t=AC.currentTime+when,s=AC.createBufferSource();s.buffer=noiseBuf;s.loop=true;
+ const f=AC.createBiquadFilter();f.type=fType;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(Math.max(f1,20),t+dur);
+ const g=AC.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+dur);}
+const SFX={
+ hit(){noise(.09,.35,'lowpass',900,150);tone(160,60,.09,'sine',.3)},
+ heavy(){noise(.2,.5,'lowpass',700,60);tone(110,35,.25,'sine',.55)},
+ block(){tone(700,300,.07,'square',.12);noise(.05,.15,'highpass',2000,3000)},
+ whoosh(){noise(.14,.16,'bandpass',500,2400)},
+ shuriken(){noise(.18,.14,'bandpass',2800,900);tone(1800,900,.12,'sawtooth',.05)},
+ jump(){tone(280,620,.14,'sine',.14)},
+ dash(){noise(.16,.2,'bandpass',400,2000)},
+ rasengan(){tone(180,720,.45,'sawtooth',.12);noise(.5,.14,'bandpass',800,2600)},
+ chidori(){for(let i=0;i<9;i++)noise(.05,.2,'highpass',2500,4000,i*.055);tone(1200,2400,.4,'sawtooth',.06)},
+ fire(){noise(.55,.35,'lowpass',1200,200)},
+ boom(){noise(.6,.6,'lowpass',900,40);tone(90,28,.55,'sine',.7)},
+ thunder(){noise(.15,.6,'highpass',1500,3000);noise(.8,.55,'lowpass',600,40,.06);tone(70,25,.7,'sine',.6,.05)},
+ ko(){tone(392,392,.15,'square',.2);tone(311,311,.15,'square',.2,.16);tone(233,110,.5,'square',.25,.32)},
+ select(){tone(660,880,.08,'square',.12)},
+ ult(){tone(110,880,.7,'sawtooth',.16);noise(.7,.15,'bandpass',300,3000)}
+};
+function musicStart(){ if(musicTimer||!AC)return; const scale=[146.8,174.6,196,220,261.6]; // D F G A C
+ musicTimer=setInterval(()=>{ if(muted||game.phase!=='fight')return; const s=musicStep++%32;
+  if(s%8===0||s%8===5) tone(95,38,.22,'sine',.30);                 // taiko
+  if(s%4===2) noise(.05,.05,'highpass',4000,5000);                  // shaker
+  if([0,3,6,10,12,14,18,22,26,29].includes(s)) tone(scale[irnd(0,4)]*2,scale[irnd(0,4)]*2,.24,'triangle',.055); // petikan
+ },150);}
+function musicStop(){ if(musicTimer){clearInterval(musicTimer);musicTimer=null;} }
+
+/* ---------- input ---------- */
+const keys={},pressedCodes=new Set(),dashQueue={p1:0,p2:0};
+const lastTap={};
+const MOVE_CODES={KeyA:['p1',-1],KeyD:['p1',1],ArrowLeft:['p2',-1],ArrowRight:['p2',1]};
+addEventListener('keydown',e=>{
+ if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(e.code))e.preventDefault();
+ if(e.repeat)return; keys[e.code]=true; pressedCodes.add(e.code); audioInit();
+ const m=MOVE_CODES[e.code];
+ if(m){const k=m[0]+m[1],now=performance.now(); if(lastTap[k]&&now-lastTap[k]<280) dashQueue[m[0]]=m[1]; lastTap[k]=now;}
+ if(e.code==='Escape'&&(game.phase==='fight'||game.phase==='intro')) togglePause();
+});
+addEventListener('keyup',e=>{keys[e.code]=false;});
+cvs.addEventListener('pointerdown',()=>audioInit());
+const touchHold={left:0,right:0,jump:0,block:0},touchPress=new Set();
+let touchLastTap={t:0,dir:0};
+document.querySelectorAll('.tbtn').forEach(b=>{
+ const hold=b.dataset.hold,press=b.dataset.press;
+ const on=e=>{e.preventDefault();audioInit(); if(hold){touchHold[hold]=1;
+   if(hold==='left'||hold==='right'){const dir=hold==='left'?-1:1,now=performance.now();
+     if(touchLastTap.dir===dir&&now-touchLastTap.t<300)dashQueue.p1=dir; touchLastTap={t:now,dir};}}
+  if(press)touchPress.add(press);};
+ const off=e=>{e.preventDefault(); if(hold)touchHold[hold]=0;};
+ b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointerleave',off);b.addEventListener('pointercancel',off);
+});
+if('ontouchstart'in window||navigator.maxTouchPoints>0)document.body.classList.add('touch');
+const P1MAP={left:['KeyA'],right:['KeyD'],jump:['KeyW'],block:['KeyS'],light:['KeyJ'],heavy:['KeyK'],throw:['KeyL'],jutsu:['KeyU'],ult:['KeyI']};
+const P2MAP={left:['ArrowLeft'],right:['ArrowRight'],jump:['ArrowUp'],block:['ArrowDown'],light:['Numpad1','KeyB'],heavy:['Numpad2','KeyN'],throw:['Numpad3','KeyM'],jutsu:['Numpad4','Comma'],ult:['Numpad5','Period']};
+function humanInput(map,who){
+ const held=a=>map[a].some(c=>keys[c]),prs=a=>map[a].some(c=>pressedCodes.has(c));
+ const inp={left:held('left'),right:held('right'),jump:held('jump'),block:held('block'),
+  jumpP:prs('jump'),lightP:prs('light'),heavyP:prs('heavy'),throwP:prs('throw'),jutsuP:prs('jutsu'),ultP:prs('ult'),dashP:dashQueue[who]||0};
+ dashQueue[who]=0;
+ if(who==='p1'){ inp.left=inp.left||!!touchHold.left; inp.right=inp.right||!!touchHold.right;
+  inp.block=inp.block||!!touchHold.block; if(touchHold.jump&&!inp._tj){inp.jumpP=true;inp._tj=1;} if(!touchHold.jump)inp._tj=0;
+  for(const a of['light','heavy','throw','jutsu','ult']) if(touchPress.has(a)) inp[a+'P']=true; touchPress.clear(); }
+ return inp;
+}
+const EMPTY_INP=()=>({left:0,right:0,jump:0,block:0,jumpP:0,lightP:0,heavyP:0,throwP:0,jutsuP:0,ultP:0,dashP:0});
+
+/* ---------- AI CPU ---------- */
+const DIFF={easy:{think:.34,block:.12,aggro:.45,jutsu:.22,ult:.3,react:.25},
+ normal:{think:.22,block:.3,aggro:.65,jutsu:.45,ult:.55,react:.5},
+ hard:{think:.13,block:.52,aggro:.86,jutsu:.65,ult:.85,react:.75}};
+class AI{
+ constructor(diff){this.d=DIFF[diff]||DIFF.normal;this.t=0;this.now=0;this.plan={dir:0,act:null,until:0,block:0};}
+ input(me,opp,dt){
+  const inp=EMPTY_INP(); this.t-=dt; this.now+=dt;
+  const dist=Math.abs(opp.x-me.x),dir=Math.sign(opp.x-me.x)||1,now=this.now;
+  // reaksi cepat: proyektil mendekat / lawan menyerang dekat
+  const projDanger=game.projectiles.some(p=>p.owner!==me&&Math.sign(p.vx)===Math.sign(me.x-p.x)&&Math.abs(p.x-me.x)<240&&Math.abs(p.y-(me.y-90))<130);
+  if((projDanger||(opp.state==='attack'&&dist<190)||opp.state==='special')&&me.state==='free'&&me.onGround&&Math.random()<this.d.react*dt*22){
+    this.plan.block=now+rnd(.2,.45); if(projDanger&&Math.random()<.35)inp.jumpP=1; }
+  if(this.plan.block>now){inp.block=1;return inp;}
+  if(this.t<=0){ this.t=this.d.think*rnd(.7,1.3);
+   const r=Math.random(); this.plan.act=null;
+   if(me.chakra>=100&&r<this.d.ult) this.plan.act='ult';
+   else if(me.chakra>=30&&r<this.d.jutsu&&(dist>140)) this.plan.act='jutsu';
+   else if(dist>430){ this.plan.dir=dir; if(r<.18)this.plan.act='throw'; if(r<.3)this.plan.act='dash'; }
+   else if(dist>150){ this.plan.dir=Math.random()<this.d.aggro?dir:(Math.random()<.5?-dir:0);
+     if(r<.22)this.plan.act='jumpin'; else if(r<.3)this.plan.act='dash'; else if(r<.38)this.plan.act='throw'; }
+   else { this.plan.dir=Math.random()<.25?-dir:dir;
+     if(r<.55)this.plan.act='light'; else if(r<.72)this.plan.act='heavy'; else if(r<.8)this.plan.act='jumpin'; else this.plan.block=now+rnd(.15,.35); }
+   if(opp.y<GROUND-120&&dist<200&&Math.random()<.4)this.plan.act='heavy'; // anti-udara kasar
+  }
+  // eksekusi rencana
+  if(me.state==='attack'&&me.move&&me.move.combo){ if(Math.random()<.75)inp.lightP=1; return inp; } // lanjutkan kombo
+  const act=this.plan.act;
+  if(act==='ult'&&me.state==='free'&&me.onGround){inp.ultP=1;this.plan.act=null;}
+  else if(act==='jutsu'&&me.state==='free'&&me.onGround){inp.jutsuP=1;this.plan.act=null;}
+  else if(act==='throw'&&me.state==='free'){inp.throwP=1;this.plan.act=null;}
+  else if(act==='dash'&&me.state==='free'&&me.onGround){inp.dashP=dir;this.plan.act=null;}
+  else if(act==='jumpin'&&me.state==='free'){ if(me.onGround){inp.jumpP=1;} inp[dir<0?'left':'right']=1; if(!me.onGround&&dist<150){inp.lightP=1;this.plan.act=null;} }
+  else if(act==='light'&&me.state==='free'){ if(dist<135){inp.lightP=1;} else inp[dir<0?'left':'right']=1; }
+  else if(act==='heavy'&&me.state==='free'){ if(dist<145){inp.heavyP=1;this.plan.act=null;} else inp[dir<0?'left':'right']=1; }
+  else { const d=this.plan.dir; if(d<0)inp.left=1; if(d>0)inp.right=1; }
+  if(!me.onGround&&(act==='jumpin'))inp[dir<0?'left':'right']=1;
+  return inp;
+ }
+}
+
+/* ---------- entitas efek ---------- */
+let particles=[],floaters=[],ripples=[],ghosts=[],oneFx=[],bolts=[];
+function spawnP(x,y,n,opt={}){for(let i=0;i<n;i++){const a=rnd(Math.PI*2),sp=rnd(opt.sp0??40,opt.sp1??260);
+ particles.push({x,y,vx:Math.cos(a)*sp+(opt.vx||0),vy:Math.sin(a)*sp+(opt.vy||0),life:0,max:rnd(opt.l0??.25,opt.l1??.6),
+  size:rnd(opt.s0??2,opt.s1??5),color:opt.color||'#ffd34d',grav:opt.grav??300,shape:opt.shape||'c'});}}
+function floater(x,y,txt,color='#fff',size=17,big=false){floaters.push({x,y,txt,color,size,life:0,max:big?1.15:.75,big});}
+function ripple(x,big=false){ripples.push({x,r:big?16:8,life:0,max:big?.8:.55,big});}
+function fxAt(name,x,yFeet,scale=2,fps=14,center=true){oneFx.push({name,x,y:yFeet,scale,fps,t:0,center});}
+function bolt(x0,y0,x1,y1,color='#9fd8ff',wdt=3){const pts=[[x0,y0]];const n=9;
+ for(let i=1;i<n;i++){const t=i/n;pts.push([x0+(x1-x0)*t+rnd(-16,16),y0+(y1-y0)*t+rnd(-8,8)]);}pts.push([x1,y1]);
+ bolts.push({pts,color,w:wdt,life:0,max:.14});}
+
+/* ---------- petarung ---------- */
+class Fighter{
+ constructor(char,x,facing,controller){this.char=char;this.cfg=CHAR[char];this.controller=controller;
+  this.resetRound(x,facing); this.roundWins=0;}
+ resetRound(x,facing){this.x=x;this.y=GROUND;this.vx=0;this.vy=0;this.facing=facing;this.hp=this.cfg.hp;this.chakra=50;
+  this.state='free';this.stateT=0;this.move=null;this.special=null;this.stun=0;this.launched=false;this.blocking=false;this.blockLock=0;
+  this.throwCd=0;this.airAttacked=false;this.comboBuffer=false;this.deadT=0;this.flash=0;this.stepT=0;this.dashT=0;this.dashDir=0;
+  this.play('idle');}
+ get onGround(){return this.y>=GROUND-0.5;}
+ play(name,opt){opt=opt||{};const a=ANIMS[this.char][name];if(!a)return;
+  this.anim={...a,name};this.animT=0;
+  if(opt.dur){const m=MANIFEST[this.char][a.s];const len=(a.r?a.r[1]-a.r[0]+1:m.frames);this.anim.fps=len/opt.dur;}}
+ frameIdx(){const a=this.anim,m=MANIFEST[this.char][a.s];if(a.hold!==undefined)return a.hold;
+  const from=a.r?a.r[0]:0,to=a.r?a.r[1]:m.frames-1,len=to-from+1;let i=Math.floor(this.animT*(a.fps||10));
+  return from+(a.loop?i%len:Math.min(i,len-1));}
+ handPos(){return{x:this.x+this.facing*56,y:this.y-100};}
+ box(){return{x:this.x-28,y:this.y-155,w:56,h:155};}
+ startAttack(spec){this.state='attack';this.stateT=0;this.move={...spec,hitDone:{}};this.comboBuffer=false;
+  this.play(spec.anim, spec.animDur?{dur:spec.animDur}:null); if(spec.sfx)SFX[spec.sfx]&&SFX[spec.sfx]();}
+ /* ---- daftar jurus ---- */
+ lightMove(stage){const N=this.char==='naruto';
+  if(N)return[{anim:'light',dur:.30,hits:[{t:.11,dmg:42}],range:115,push:150,step:90,combo:1,sfx:'whoosh'},
+              {anim:'forward',dur:.34,hits:[{t:.14,dmg:48}],range:130,push:180,step:110,combo:1,sfx:'whoosh'},
+              {anim:'up',dur:.46,hits:[{t:.23,dmg:66,launch:-640}],range:112,push:160,step:70,sfx:'whoosh'}][stage];
+  return[{anim:'light1',dur:.29,hits:[{t:.12,dmg:40}],range:118,push:140,step:95,combo:1,sfx:'whoosh'},
+         {anim:'light2',dur:.31,hits:[{t:.13,dmg:45}],range:120,push:160,step:95,combo:1,sfx:'whoosh'},
+         {anim:'light3',dur:.40,hits:[{t:.16,dmg:60}],range:122,push:330,step:80,sfx:'whoosh'}][stage];}
+ heavyMove(){const N=this.char==='naruto';
+  return N?{anim:'heavy',dur:.58,hits:[{t:.34,dmg:96,knock:1}],range:120,push:300,step:40,groundFx:.34,sfx:'whoosh'}
+          :{anim:'heavy',dur:.56,hits:[{t:.26,dmg:46},{t:.42,dmg:52,knock:1}],range:128,push:260,step:120,sfx:'whoosh'};}
+ airMove(){const N=this.char==='naruto';
+  return N?{anim:'airatk',dur:.42,hits:[{t:.18,dmg:56}],range:112,push:220,sfx:'whoosh',air:1}
+          :{anim:'airatk',dur:.42,hits:[{t:.16,dmg:54,launch:-260}],range:118,push:220,sfx:'whoosh',air:1};}
+ throwMove(){const N=this.char==='naruto';
+  return{anim:N?'light':'throw',dur:.28,spawnAt:.11,proj:'shuriken',sfx:'shuriken',airOk:1};}
+ startSpecial(kind){ // kind: 'dashJutsu' | 'projJutsu' | 'ult'
+  this.state='special';this.stateT=0;const N=this.char==='naruto';
+  if(kind==='dashJutsu'){ this.special={kind,phase:'cast',t:0};
+    if(N){this.play('clone_cast2',{dur:.48});floater(this.x,this.y-200,'RASENGAN!','#ffd34d',26,true);SFX.rasengan();}
+    else{this.play('chidori_cast',{dur:.5});floater(this.x,this.y-200,'CHIDORI!','#9fd8ff',26,true);SFX.chidori();} }
+  else if(kind==='projJutsu'){ this.special={kind,phase:'cast',t:0,spawned:false};
+    if(N){this.play('rscast',{dur:.78});floater(this.x,this.y-200,'FUUTON: RASEN-SHURIKEN!','#bfe9ff',21,true);SFX.rasengan();}
+    else{this.play('fireball_cast',{dur:.66});floater(this.x,this.y-200,'KATON: GOUKAKYUU!','#ff9d4d',21,true);SFX.fire();} }
+  else if(kind==='ult'){ this.special={kind,phase:'cast',t:0,spawned:false};
+    if(N){this.play('rasengan_cast',{dur:.85});floater(this.x,this.y-210,'RASEN-SHURIKEN RAKSASA!','#ffe98a',24,true);}
+    else{this.play('kirin_cast',{dur:1.0});floater(this.x,this.y-210,'KIRIN!','#c9b8ff',30,true);SFX.chidori();} }
+ }
+ takeHit(att,hit){ // hit:{dmg,push,launch,knock,proj}
+  if(this.state==='dead'||this.state==='knockdown')return false;
+  const facingAtt=Math.sign(att.x-this.x)===this.facing||att===this;
+  const canBlock=this.onGround&&(this.blocking||this.blockLock>0)&&facingAtt&&!hit.unblock;
+  let dmg=hit.dmg;
+  if(canBlock){ dmg=Math.max(1,Math.round(dmg*.1)); this.hp=Math.max(0,this.hp-dmg); this.blockLock=.22;
+   this.vx=att.facing*(hit.push||160)*1.15; this.flash=.08; SFX.block();
+   spawnP(this.x+this.facing*34,this.y-95,7,{color:'#9fd8ff',sp1:200,grav:0,shape:'s'});
+   floater(this.x,this.y-175,'BLOK','#9fd8ff',13);
+   this.chakra=clamp(this.chakra+3,0,100); att.chakra=clamp(att.chakra+2,0,100);
+   if(this.hp<=0)this.die(att); return false; }
+  this.hp=Math.max(0,this.hp-dmg); this.flash=.12;
+  att.chakra=clamp(att.chakra+(hit.proj?3:6),0,100); this.chakra=clamp(this.chakra+4,0,100);
+  game.onCombo(att,this); floater(this.x+rnd(-14,14),this.y-168,Math.round(dmg),'#fff',dmg>=90?21:15,dmg>=90);
+  game.hitstop=Math.max(game.hitstop,dmg>=90?.075:.04); game.shake=Math.max(game.shake,dmg>=90?9:4);
+  spawnP(this.x-att.facing*10,this.y-95,dmg>=90?16:9,{color:att.char==='naruto'?'#ffd34d':'#bcd2ff',sp1:340,grav:140,shape:'s'});
+  if(dmg>=90)SFX.heavy();else SFX.hit();
+  if(this.hp<=0){this.die(att);return true;}
+  // batalkan aksi korban
+  this.move=null;this.special=null;this.state='hurt';this.stateT=0;this.play('hurt');
+  this.stun=hit.stun??.34; this.vx=att.facing*(hit.push||180);
+  if(hit.launch){this.vy=hit.launch;this.launched=true;}
+  else if(hit.knock&&this.onGround){this.vy=-400;this.launched=true;}
+  else if(!this.onGround){this.launched=true;}
+  return true;
+ }
+ die(att){ this.hp=0;this.state='dead';this.stateT=0;this.deadT=0;this.move=null;this.special=null;
+  this.vx=(att&&att!==this?att.facing:-this.facing)*260; this.vy=-460; this.launched=true; this.play('knockdown'); game.onKO(this,att); }
+ update(dt,opp,inp){
+  this.animT+=dt; this.stateT+=dt; if(this.flash>0)this.flash-=dt;
+  if(this.throwCd>0)this.throwCd-=dt; if(this.blockLock>0)this.blockLock-=dt;
+  this.chakra=clamp(this.chakra+3*dt,0,100);
+  const N=this.char==='naruto';
+  // aura KCM Naruto
+  if(N&&this.state!=='dead'&&this.state!=='knockdown'&&Math.random()<.5)
+    particles.push({x:this.x+rnd(-26,26),y:this.y-rnd(0,120),vx:rnd(-8,8),vy:rnd(-70,-25),life:0,max:rnd(.3,.6),size:rnd(2,4.5),color:'#ffb020',grav:-60,shape:'c'});
+
+  if(this.state==='dead'||this.state==='win'||this.state==='intro'){ this.physics(dt,true); if(this.state==='intro'&&game.phase==='fight')this.state='free'; return; }
+  if(this.state==='knockdown'){ this.physics(dt,true); if(this.onGround&&this.stateT>.85){this.state='free';this.play('idle');} return; }
+  if(this.state==='hurt'){ this.physics(dt,true);
+    if(this.onGround&&this.launched&&this.stateT>.05){ this.launched=false;this.state='knockdown';this.stateT=0;this.play('knockdown');
+      ripple(this.x,true);fxAt('smoke',this.x,GROUND,2.2,10);spawnP(this.x,GROUND-6,8,{color:'#bcd8ff',sp1:160,vy:-40}); }
+    else if(this.onGround&&this.stateT>=this.stun){this.state='free';}
+    return; }
+  if(this.state==='attack'){ this.updateAttack(dt,opp,inp); this.physics(dt,false); return; }
+  if(this.state==='special'){ this.updateSpecial(dt,opp); this.physics(dt,false); return; }
+  if(this.state==='dash'){ this.dashT-=dt; this.vx=this.dashDir*760;
+    ghosts.push({char:this.char,anim:this.anim,frame:this.frameIdx(),x:this.x,y:this.y,facing:this.facing,life:0,max:.22,scale:this.cfg.scale});
+    if(inp.lightP){ const m=N?{anim:'forward',dur:.36,hits:[{t:.15,dmg:58}],range:130,push:260,sfx:'whoosh'}
+                             :{anim:'dash_attack',dur:.42,hits:[{t:.2,dmg:62}],range:135,push:280,sfx:'whoosh'};
+      this.startAttack(m); this.physics(dt,false); return; }
+    if(this.dashT<=0){this.state='free';this.vx=0;}
+    this.physics(dt,false); return; }
+
+  /* --- state free --- */
+  this.blocking=!!inp.block&&this.onGround;
+  if(this.onGround&&(game.phase==='fight'))this.facing=opp.x>=this.x?1:-1;
+  // serangan khusus
+  if(inp.ultP&&this.onGround&&this.chakra>=100){ this.chakra=0; game.startCine(this); return; }
+  if(inp.jutsuP&&this.onGround&&this.chakra>=30){ this.chakra-=30;
+    this.startSpecial(Math.abs(opp.x-this.x)>370?'projJutsu':'dashJutsu'); return; }
+  if(inp.jutsuP&&this.onGround&&this.chakra<30)floater(this.x,this.y-180,'Chakra kurang!','#ff8080',13);
+  if(inp.throwP&&this.throwCd<=0){ this.throwCd=.4; this.startAttack(this.throwMove()); this.physics(dt,false); return; }
+  if(!this.onGround&&(inp.lightP||inp.heavyP)&&!this.airAttacked){ this.airAttacked=true; this.startAttack(this.airMove()); this.physics(dt,false); return; }
+  if(this.onGround&&inp.heavyP){ this.startAttack(this.heavyMove()); this.physics(dt,false); return; }
+  if(this.onGround&&inp.lightP){ this.startAttack({...this.lightMove(0),stage:0}); this.physics(dt,false); return; }
+  if(inp.dashP&&this.onGround&&!this.blocking){ this.state='dash';this.dashT=.17;this.dashDir=inp.dashP;this.facing=opp.x>=this.x?1:-1;
+    this.play(N?'run':'dash'); SFX.dash(); fxAt('smoke',this.x,GROUND,1.9,12); ripple(this.x); this.physics(dt,false); return; }
+  if(inp.jumpP&&this.onGround&&!this.blocking){ this.vy=-1020; this.airAttacked=false; SFX.jump(); ripple(this.x); }
+  // gerak
+  let mv=0; if(inp.left)mv-=1; if(inp.right)mv+=1;
+  if(this.blocking){this.vx=0;}
+  else if(this.onGround){this.vx=mv*this.cfg.speed;}
+  else{this.vx=clamp(this.vx+mv*1900*dt,-this.cfg.speed*1.05,this.cfg.speed*1.05);}
+  // animasi free
+  const want=this.blocking?'guard':!this.onGround?(this.vy<0?'jump':'fall'):mv!==0?'run':'idle';
+  if(this.anim.name!==want)this.play(want);
+  if(this.onGround&&mv!==0){this.stepT-=dt; if(this.stepT<=0){this.stepT=.19;ripple(this.x);}}
+  this.physics(dt,false);
+ }
+ updateAttack(dt,opp,inp){
+  const m=this.move; if(inp&&inp.lightP&&m.combo)this.comboBuffer=true;
+  if(m.step&&this.stateT<m.dur*.6)this.vx=this.facing*m.step; else if(!m.air)this.vx*=.8;
+  if(m.groundFx&&this.stateT>=m.groundFx&&!m._gfx){m._gfx=1;game.shake=Math.max(game.shake,6);ripple(this.x+this.facing*60,true);
+    spawnP(this.x+this.facing*60,GROUND-4,14,{color:'#ffd34d',sp1:240,vy:-160});SFX.heavy();}
+  if(m.proj&&this.stateT>=m.spawnAt&&!m._spawned){m._spawned=1;game.spawnProjectile(this,m.proj);}
+  if(m.hits)m.hits.forEach((h,i)=>{ if(this.stateT>=h.t&&!m.hitDone[i]){ m.hitDone[i]=1;
+    const inRange=Math.sign(opp.x-this.x)===this.facing||Math.abs(opp.x-this.x)<40;
+    if(inRange&&Math.abs(opp.x-this.x)<=m.range&&Math.abs(opp.y-this.y)<130&&opp.state!=='dead')
+      opp.takeHit(this,{dmg:h.dmg,push:m.push,launch:h.launch,knock:h.knock});
+  }});
+  if(this.stateT>=m.dur){ if(this.comboBuffer&&m.combo&&m.stage!==undefined&&m.stage<2&&this.onGround){
+      this.startAttack({...this.lightMove(m.stage+1),stage:m.stage+1}); }
+    else{this.state='free';this.move=null;if(this.onGround)this.play('idle');} }
+ }
+ updateSpecial(dt,opp){
+  const sp=this.special,N=this.char==='naruto'; sp.t+=dt; this.vx*=.75;
+  if(sp.kind==='dashJutsu'){
+   if(sp.phase==='cast'){ const dur=N?.48:.5;
+     if(N){const h=this.handPos();spawnP(h.x,h.y,2,{color:'#8fd4ff',sp0:10,sp1:60,grav:0});}
+     else if(Math.random()<.6){const h=this.handPos();bolt(h.x+rnd(-16,16),h.y+rnd(-24,24),h.x+rnd(-30,30),h.y+rnd(-30,30));}
+     if(sp.t>=dur){sp.phase='dash';sp.t=0;sp.hit=false;this.play(N?'rasengan_dash':'chidori_run');SFX.dash();fxAt('smoke',this.x,GROUND,2,12);} }
+   else if(sp.phase==='dash'){ this.vx=this.facing*(N?770:830);
+     ghosts.push({char:this.char,anim:this.anim,frame:this.frameIdx(),x:this.x,y:this.y,facing:this.facing,life:0,max:.18,scale:this.cfg.scale});
+     if(!N&&Math.random()<.35)bolt(this.x,this.y-70,this.x-this.facing*rnd(40,90),this.y-rnd(0,90));
+     // bentrok Rasengan vs Chidori!
+     if(opp.state==='special'&&opp.special&&opp.special.kind==='dashJutsu'&&opp.special.phase==='dash'&&Math.abs(opp.x-this.x)<95){game.clash(this,opp);return;}
+     if(!sp.hit&&Math.abs(opp.x-this.x)<92&&Math.abs(opp.y-this.y)<125&&opp.state!=='dead'){ sp.hit=true;
+       const hx=(this.x+opp.x)/2; fxAt('explosion',hx,opp.y,2.4,16);
+       opp.takeHit(this,{dmg:145,push:420,launch:-520,stun:.4});
+       sp.phase='recover';sp.t=0;this.vx=-this.facing*160;this.play(N?'clone_cast':'chidori_lunge'); }
+     if(sp.t>.52||this.x<65||this.x>W-65){sp.phase='recover';sp.t=0;this.play('idle');} }
+   else{ if(sp.t>.32){this.state='free';this.special=null;this.play('idle');} }
+  }
+  else if(sp.kind==='projJutsu'){
+   const at=N?.56:.46,dur=N?.78:.66;
+   if(!sp.spawned&&sp.t>=at){sp.spawned=true;game.spawnProjectile(this,N?'rasenshuriken':'fireball');}
+   if(sp.t>=dur){this.state='free';this.special=null;this.play('idle');}
+  }
+  else if(sp.kind==='ult'){
+   if(N){ if(!sp.spawned&&sp.t>=.62){sp.spawned=true;game.spawnProjectile(this,'giantRS');game.shake=8;}
+     if(sp.t>=.95){this.state='free';this.special=null;this.play('idle');} }
+   else{ if(sp.t<.9&&Math.random()<.5)bolt(this.x+rnd(-50,50),20,this.x+rnd(-30,30),this.y-150,'#c9b8ff',2);
+     if(!sp.spawned&&sp.t>=1.0){sp.spawned=true;game.startKirin(this,opp);}
+     if(sp.t>=1.45){this.state='free';this.special=null;this.play('idle');} }
+  }
+ }
+ physics(dt,decay){
+  if(!this.onGround||this.vy<0)this.vy+=GRAV*dt;
+  this.x+=this.vx*dt; this.y+=this.vy*dt;
+  if(decay&&this.onGround)this.vx*=Math.pow(.0015,dt); // gesekan saat terpukul/diam
+  if(this.y>=GROUND){ if(!this.onGround&&this.vy>500){ripple(this.x);} this.y=GROUND; if(this.vy>0)this.vy=0; }
+  this.x=clamp(this.x,46,W-46);
+ }
+ draw(c){ this.drawSprite(c,this.x,this.y,this.facing,1); }
+ drawSprite(c,x,feetY,facing,alpha,flipY=false,tintFlash=true){
+  const a=this.anim,m=MANIFEST[this.char][a.s],img=IMG[this.char][a.s]; if(!img||!img.complete)return;
+  const fi=this.frameIdx(),sc=this.cfg.scale,dw=m.fw*sc,dh=m.fh*sc;
+  c.save(); c.globalAlpha=alpha; c.imageSmoothingEnabled=false;
+  c.translate(x,feetY); c.scale(facing,flipY?-1:1);
+  if(tintFlash&&this.flash>0&&!flipY){c.shadowColor='#fff';c.shadowBlur=18;}
+  else if(this.char==='naruto'&&!flipY&&alpha===1){c.shadowColor='rgba(255,160,20,.85)';c.shadowBlur=16;}
+  else if(this.char==='sasuke'&&!flipY&&alpha===1){c.shadowColor='rgba(100,140,255,.5)';c.shadowBlur=10;}
+  c.drawImage(img,fi*m.fw,0,m.fw,m.fh,-dw/2,flipY?0:-dh,dw,dh);
+  c.restore();
+  // overlay blok Sasuke: tulang Susanoo
+  if(!flipY&&alpha===1&&this.blocking&&this.char==='sasuke'){c.save();c.globalAlpha=.9;c.imageSmoothingEnabled=false;
+    c.translate(x+facing*8,feetY);c.scale(facing,1);c.drawImage(susanoImg,-58,-168,116,168);c.restore();}
+  if(!flipY&&alpha===1&&this.blocking&&this.char==='naruto'){c.save();c.strokeStyle='rgba(255,190,60,.8)';c.lineWidth=3;
+    c.beginPath();c.arc(x,feetY-82,62,0,Math.PI*2);c.stroke();c.restore();}
+  // bola Rasengan / percikan Chidori saat dash jutsu
+  if(!flipY&&alpha===1&&this.state==='special'&&this.special&&this.special.kind==='dashJutsu'&&this.special.phase==='dash'){
+   const h=this.handPos();
+   if(this.char==='naruto'){drawFxFrame(c,'rasengan',Math.floor(performance.now()/70)%2,h.x,h.y,1.15);}
+   else{drawFxFrame(c,'chidori_spark',irnd(0,9),h.x,h.y,1.7); if(Math.random()<.4)bolt(h.x,h.y,h.x+rnd(-40,40),h.y+rnd(-40,40));}
+  }
+ }
+}
+function drawFxFrame(c,name,fi,cx,cy,scale=2,rot=0,alpha=1){
+ const m=MANIFEST.fx[name],img=IMG.fx[name]; if(!m||!img||!img.complete)return;
+ fi=((fi%m.frames)+m.frames)%m.frames;
+ c.save();c.globalAlpha=alpha;c.imageSmoothingEnabled=false;c.translate(cx,cy);c.rotate(rot);
+ c.drawImage(img,fi*m.fw,0,m.fw,m.fh,-m.fw*scale/2,-m.fh*scale/2,m.fw*scale,m.fh*scale);c.restore();
+}
+
+/* ---------- game ---------- */
+const game={
+ phase:'loading',mode:'1p',diff:'normal',p1char:'naruto',
+ f1:null,f2:null,round:1,timer:99,introT:0,endT:0,winner:null,
+ hitstop:0,shake:0,slow:1,slowT:0,projectiles:[],kirin:null,cine:null,
+ banner:null,combo:{p1:{n:0,t:0},p2:{n:0,t:0}},paused:false,time:0,
+ setBanner(txt,sub='',dur=1.1,color='#fff'){this.banner={txt,sub,t:0,dur,color};},
+ startMatch(mode){
+  this.mode=mode; audioInit(); SFX.select();
+  const c1=mode==='2p'?'naruto':this.p1char, c2=c1==='naruto'?'sasuke':'naruto';
+  const ctrl1={type:'human',map:P1MAP,who:'p1'};
+  const ctrl2=mode==='2p'?{type:'human',map:P2MAP,who:'p2'}:{type:'ai',ai:new AI(this.diff)};
+  this.f1=new Fighter(c1,250,1,ctrl1); this.f2=new Fighter(c2,710,-1,ctrl2);
+  this.round=1; this.startRound(); musicStart();
+  $('menu').classList.add('hidden');$('howto').classList.add('hidden');$('matchend').classList.add('hidden');$('pause').classList.add('hidden');
+  $('topbar').classList.remove('hidden'); document.body.classList.add('fighting'); this.paused=false;
+ },
+ startRound(){
+  this.f1.resetRound(250,1); this.f2.resetRound(710,-1);
+  this.f1.state='intro';this.f1.play('intro'); this.f2.state='intro';this.f2.play('intro');
+  this.timer=99;this.introT=0;this.phase='intro';this.projectiles=[];this.kirin=null;this.cine=null;
+  this.combo={p1:{n:0,t:0},p2:{n:0,t:0}}; particles=[];floaters=[];oneFx=[];bolts=[];ghosts=[];
+  this.setBanner('RONDE '+this.round,'bersiap…',1.25,'#ffd34d');
+ },
+ inputFor(f,opp,dt){ const c=f.controller;
+  if(this.phase!=='fight')return EMPTY_INP();
+  return c.type==='human'?humanInput(c.map,c.who):c.ai.input(f,opp,dt); },
+ onCombo(att){const k=att===this.f1?'p1':'p2';this.combo[k].n++;this.combo[k].t=1.1;},
+ onKO(loser){ if(this.phase==='roundEnd'||this.phase==='matchEnd')return;
+  const winner=loser===this.f1?this.f2:this.f1; this.winner=winner; winner.roundWins++;
+  this.phase='roundEnd'; this.endT=0; this.slow=.3; this.slowT=.9; this.shake=12;
+  this.setBanner('KO!','',1.6,'#ff5252'); SFX.ko(); SFX.boom();
+  fxAt('explosion',loser.x,loser.y,2.6,14); },
+ roundTimeout(){ const a=this.f1,b=this.f2;
+  if(a.hp===b.hp){ this.setBanner('SERI','ronde diulang',1.5,'#fff'); this.phase='roundEnd'; this.endT=0; this.winner=null; return; }
+  const w=a.hp>b.hp?a:b,l=w===a?b:a; w.roundWins++; this.winner=w;
+  l.state='knockdown';l.stateT=0;l.play('knockdown');
+  this.setBanner('WAKTU HABIS',CHAR[w.char].name+' menang ronde',1.6,'#ffd34d'); this.phase='roundEnd'; this.endT=0; SFX.ko(); },
+ startCine(user){ this.cine={user,t:0,dur:1.2}; SFX.ult();
+  floater(user.x,user.y-215,'JUTSU ULTIMATE!','#fff',20,true); },
+ clash(a,b){ const cx=(a.x+b.x)/2;
+  fxAt('explosion',cx,GROUND,3.4,15); this.shake=16; this.hitstop=.12; SFX.boom(); SFX.thunder();
+  this.setBanner('BENTROK!','Rasengan vs Chidori',1.2,'#bfe9ff');
+  spawnP(cx,GROUND-90,40,{color:'#bfe9ff',sp1:520,grav:200,shape:'s'}); spawnP(cx,GROUND-90,26,{color:'#ffd34d',sp1:420,grav:200,shape:'s'});
+  for(const f of[a,b]){ f.special=null; f.state='hurt'; f.stateT=0; f.stun=.5; f.play('hurt');
+    f.hp=Math.max(1,f.hp-55); f.vx=(f.x<cx?-1:1)*430; f.vy=-420; f.launched=true; floater(f.x,f.y-175,55,'#fff',16);} },
+ spawnProjectile(owner,type){
+  const h=owner.handPos(),dir=owner.facing;
+  const base={owner,type,x:h.x,y:h.y,vx:dir*640,life:0,angle:0};
+  if(type==='shuriken')Object.assign(base,{vx:dir*660,dmg:30,r:20});
+  if(type==='fireball')Object.assign(base,{vx:dir*500,dmg:112,r:52});
+  if(type==='rasenshuriken')Object.assign(base,{vx:dir*470,dmg:118,r:55});
+  if(type==='giantRS')Object.assign(base,{vx:dir*540,dmg:245,r:95,giant:1});
+  this.projectiles.push(base);
+ },
+ startKirin(user,opp){ this.kirin={x:clamp(opp.x,80,W-80),t:0,phase:'warn',user}; SFX.thunder(); this.shake=6; },
+ update(dt){
+  this.time+=dt;
+  if(this.slowT>0){this.slowT-=dt;if(this.slowT<=0)this.slow=1;}
+  if(this.banner){this.banner.t+=dt;if(this.banner.t>this.banner.dur)this.banner=null;}
+  for(const k of['p1','p2']){if(this.combo[k].t>0){this.combo[k].t-=dt;if(this.combo[k].t<=0)this.combo[k].n=0;}}
+  updateFx(dt);
+  if(this.phase==='loading'||this.phase==='menu'){
+    if(this.f1){this.f1.animT+=dt;this.f2.animT+=dt;
+      if(Math.random()<.4)particles.push({x:this.f1.x+rnd(-26,26),y:this.f1.y-rnd(0,110),vx:0,vy:rnd(-60,-25),life:0,max:.5,size:3,color:'#ffb020',grav:-50,shape:'c'});}
+    return; }
+  if(this.paused)return;
+  if(this.hitstop>0){this.hitstop-=dt;return;}
+  dt*=this.slow;
+  if(this.cine){ this.cine.t+=dt; this.f1.animT+=dt*.2; this.f2.animT+=dt*.2;
+    if(this.cine.t>=this.cine.dur){const u=this.cine.user;this.cine=null;u.startSpecial('ult');} return; }
+  if(this.phase==='intro'){ this.introT+=dt;
+    this.f1.update(dt,this.f2,EMPTY_INP()); this.f2.update(dt,this.f1,EMPTY_INP());
+    if(this.introT>=1.5){this.phase='fight';this.f1.state='free';this.f2.state='free';this.f1.play('idle');this.f2.play('idle');
+      this.setBanner('MULAI!','',.8,'#7dff8a');SFX.select();} return; }
+  if(this.phase==='roundEnd'||this.phase==='matchEnd'){ this.endT+=dt;
+    this.f1.update(dt,this.f2,EMPTY_INP()); this.f2.update(dt,this.f1,EMPTY_INP());
+    this.updateProjectiles(dt); this.updateKirin(dt);
+    const w=this.winner;
+    if(w&&w.state!=='win'&&w.state!=='dead'&&this.endT>1.15){w.state='win';w.move=null;w.special=null;w.play('win');}
+    if(this.phase==='roundEnd'&&this.endT>3.1){
+      if(!w){this.startRound();return;}
+      if(w.roundWins>=2){ this.phase='matchEnd'; musicStop();
+        $('winnerImg').src=w.char==='naruto'?'assets/sprites/naruto_portrait.png':'assets/sprites/sasuke_portrait.png';
+        $('winnerName').textContent=CHAR[w.char].full+' MENANG!'; $('winnerName').style.color=CHAR[w.char].color;
+        $('matchend').classList.remove('hidden'); }
+      else{this.round++;this.startRound();} }
+    return; }
+  /* fight */
+  this.timer-=dt; if(this.timer<=0){this.timer=0;this.roundTimeout();return;}
+  const i1=this.inputFor(this.f1,this.f2,dt),i2=this.inputFor(this.f2,this.f1,dt);
+  this.f1.update(dt,this.f2,i1); this.f2.update(dt,this.f1,i2);
+  // dorong pisah badan
+  const a=this.f1,b=this.f2,dx=b.x-a.x;
+  if(Math.abs(dx)<52&&Math.abs(a.y-b.y)<110&&a.state!=='dead'&&b.state!=='dead'&&a.state!=='knockdown'&&b.state!=='knockdown'){
+    const push=(52-Math.abs(dx))/2*(dx>=0?1:-1); a.x-=push;b.x+=push; a.x=clamp(a.x,46,W-46);b.x=clamp(b.x,46,W-46); }
+  this.updateProjectiles(dt); this.updateKirin(dt);
+ },
+ updateProjectiles(dt){
+  for(const p of this.projectiles){ p.x+=p.vx*dt; p.life+=dt; p.angle+=dt*18;
+   if(p.type==='fireball')spawnP(p.x-Math.sign(p.vx)*30,p.y+rnd(-22,22),2,{color:'#ff8a2a',sp0:10,sp1:60,grav:-40,l1:.35});
+   if(p.type.includes('RS')||p.type==='rasenshuriken')spawnP(p.x,p.y+rnd(-26,26),2,{color:'#bfe9ff',sp0:10,sp1:70,grav:0,l1:.3});
+   const opp=p.owner===this.f1?this.f2:this.f1;
+   if(!p.dead&&opp.state!=='dead'&&opp.state!=='knockdown'&&Math.abs(p.x-opp.x)<p.r+20&&p.y>opp.y-185&&p.y<opp.y+6){
+     p.dead=true; fxAt('explosion',p.x,opp.y,p.giant?3.2:2.1,15); if(p.type!=='shuriken')SFX.boom();
+     opp.takeHit(p.owner,{dmg:p.dmg,push:p.giant?460:300,launch:p.giant?-560:(p.type==='shuriken'?0:-380),knock:p.type!=='shuriken',proj:1}); }
+   if(p.x<-70||p.x>W+70||p.life>4)p.dead=true; }
+  // proyektil besar saling tabrak
+  for(const p of this.projectiles)for(const q of this.projectiles){
+    if(p===q||p.dead||q.dead||p.owner===q.owner||p.type==='shuriken'||q.type==='shuriken')continue;
+    if(Math.abs(p.x-q.x)<70&&Math.abs(p.y-q.y)<80){ if(p.giant&&!q.giant)q.dead=true; else if(q.giant&&!p.giant)p.dead=true; else{p.dead=q.dead=true;}
+      fxAt('explosion',(p.x+q.x)/2,GROUND,2.6,15);SFX.boom();this.shake=10; floater((p.x+q.x)/2,GROUND-190,'TABRAKAN JUTSU!','#fff',17,true);} }
+  this.projectiles=this.projectiles.filter(p=>!p.dead);
+ },
+ updateKirin(dt){ const k=this.kirin; if(!k)return; k.t+=dt;
+  if(k.phase==='warn'){ if(Math.random()<.4)bolt(k.x+rnd(-70,70),10,k.x+rnd(-40,40),rnd(90,190),'#c9b8ff',2);
+    if(k.t>.5){k.phase='strike';k.t=0;SFX.thunder();this.shake=15;
+      fxAt('explosion',k.x,GROUND,3,15); fxAt('amaterasu',k.x,GROUND,1.6,9);
+      spawnP(k.x,GROUND-30,34,{color:'#c9b8ff',sp1:480,shape:'s',grav:250});
+      const opp=k.user===this.f1?this.f2:this.f1;
+      if(Math.abs(opp.x-k.x)<92&&opp.y>GROUND-205&&opp.state!=='dead')
+        opp.takeHit(k.user,{dmg:262,push:380,launch:-600,knock:1,proj:1}); } }
+  else if(k.t>.55)this.kirin=null; },
+ draw(){ drawScene(); }
+};
+function updateFx(dt){
+ for(const p of particles){p.life+=dt;p.vy+=(p.grav||0)*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;}
+ particles=particles.filter(p=>p.life<p.max);
+ for(const f of floaters){f.life+=dt;f.y-=34*dt;} floaters=floaters.filter(f=>f.life<f.max);
+ for(const r of ripples){r.life+=dt;r.r+=(r.big?150:95)*dt;} ripples=ripples.filter(r=>r.life<r.max);
+ for(const g of ghosts)g.life+=dt; ghosts=ghosts.filter(g=>g.life<g.max);
+ for(const f of oneFx)f.t+=dt; oneFx=oneFx.filter(f=>f.t<MANIFEST.fx[f.name].frames/f.fps);
+ for(const b of bolts)b.life+=dt; bolts=bolts.filter(b=>b.life<b.max);
+ if(game.shake>0)game.shake=Math.max(0,game.shake-38*dt);
+}
+
+/* ---------- gambar ---------- */
+function drawStripGhost(c,g){const m=MANIFEST[g.char][g.anim.s],img=IMG[g.char][g.anim.s];if(!img||!img.complete)return;
+ c.save();c.globalAlpha=.32*(1-g.life/g.max);c.imageSmoothingEnabled=false;c.translate(g.x,g.y);c.scale(g.facing,1);
+ c.drawImage(img,g.frame*m.fw,0,m.fw,m.fh,-m.fw*g.scale/2,-m.fh*g.scale,m.fw*g.scale,m.fh*g.scale);c.restore();}
+function drawScene(){
+ const c=ctx; c.clearRect(0,0,W,H);
+ const shx=game.shake?rnd(-game.shake,game.shake):0,shy=game.shake?rnd(-game.shake,game.shake)*.6:0;
+ c.save(); c.translate(shx,shy);
+ // latar Lembah Akhir
+ c.imageSmoothingEnabled=true;
+ if(bgImg.complete&&bgImg.naturalWidth)c.drawImage(bgImg,-14,-10,W+28,H+16);
+ else{c.fillStyle='#27407e';c.fillRect(0,0,W,H);}
+ // gelapkan bagian bawah (permukaan air) + garis tanah
+ const gr=c.createLinearGradient(0,GROUND-6,0,H);gr.addColorStop(0,'rgba(20,60,110,.05)');gr.addColorStop(1,'rgba(6,20,50,.5)');
+ c.fillStyle=gr;c.fillRect(-14,GROUND-4,W+28,H-GROUND+10);
+ // riak air
+ for(const r of ripples){c.save();c.globalAlpha=.55*(1-r.life/r.max);c.strokeStyle='#cfeaff';c.lineWidth=2;
+   c.beginPath();c.ellipse(r.x,GROUND+7,r.r,r.r*.22,0,0,Math.PI*2);c.stroke();c.restore();}
+ const fighters=[game.f1,game.f2].filter(Boolean);
+ // bayangan + pantulan di air
+ for(const f of fighters){const hgt=clamp(1-(GROUND-f.y)/320,.25,1);
+   c.save();c.fillStyle=`rgba(0,0,20,${.34*hgt})`;c.beginPath();c.ellipse(f.x,GROUND+8,52*hgt+16,10*hgt+3,0,0,Math.PI*2);c.fill();c.restore();
+   if(f.state!=='dead')f.drawSprite(c,f.x,GROUND+12,f.facing,.13,true,false); }
+ for(const g of ghosts)drawStripGhost(c,g);
+ // kirin: naga + tanda sasaran + sambaran
+ if(game.kirin){const k=game.kirin;
+   drawFxFrame(c,'kirin_dragon',Math.floor(game.time*8)%3,k.x,112,1.9);
+   if(k.phase==='warn'){c.save();c.strokeStyle='rgba(200,170,255,.9)';c.lineWidth=2;c.setLineDash([8,6]);
+     c.beginPath();c.ellipse(k.x,GROUND+6,92,16,0,0,Math.PI*2);c.stroke();c.restore();}
+   else{ for(let i=0;i<4;i++)boltDraw(c,k.x+rnd(-34,34),110,k.x+rnd(-20,20),GROUND,'#d9ccff',5);
+     boltDraw(c,k.x,100,k.x,GROUND,'#fff',8);} }
+ // petarung
+ for(const f of fighters)f.draw(c);
+ // proyektil
+ for(const p of game.projectiles){
+   if(p.type==='shuriken'){c.save();c.imageSmoothingEnabled=false;c.translate(p.x,p.y);c.rotate(p.angle);c.drawImage(shurImg,-17,-17,34,34);c.restore();}
+   else if(p.type==='fireball'){drawFxFrame(c,'fireball',Math.floor(p.life*13),p.x,p.y,2.7);}
+   else{const s=p.giant?1.55:.8; drawFxFrame(c,'rasenshuriken',Math.floor(p.life*16)%2,p.x,p.y,s);
+     c.save();c.globalAlpha=.5;c.fillStyle='#bfe9ff';c.beginPath();c.arc(p.x,p.y,p.giant?34:20,0,Math.PI*2);c.fill();c.restore();} }
+ // fx sekali putar (ledakan/asap/amaterasu) — digambar dari kaki ke atas
+ for(const f of oneFx){const m=MANIFEST.fx[f.name],img=IMG.fx[f.name];if(!img||!img.complete)continue;
+   const fi=Math.min(Math.floor(f.t*f.fps),m.frames-1);
+   c.save();c.imageSmoothingEnabled=false;c.drawImage(img,fi*m.fw,0,m.fw,m.fh,f.x-m.fw*f.scale/2,f.y-m.fh*f.scale,m.fw*f.scale,m.fh*f.scale);c.restore();}
+ // partikel
+ for(const p of particles){c.save();c.globalAlpha=1-p.life/p.max;c.fillStyle=p.color;c.strokeStyle=p.color;
+   if(p.shape==='s'){c.lineWidth=2;c.beginPath();c.moveTo(p.x,p.y);c.lineTo(p.x-p.vx*.03,p.y-p.vy*.03);c.stroke();}
+   else{c.beginPath();c.arc(p.x,p.y,p.size,0,Math.PI*2);c.fill();}c.restore();}
+ // petir simpanan
+ for(const b of bolts){c.save();c.globalAlpha=1-b.life/b.max;c.strokeStyle=b.color;c.lineWidth=b.w;c.shadowColor=b.color;c.shadowBlur=8;
+   c.beginPath();c.moveTo(b.pts[0][0],b.pts[0][1]);for(const pt of b.pts)c.lineTo(pt[0],pt[1]);c.stroke();c.restore();}
+ c.restore(); // akhir shake
+ // cut-in ultimate
+ if(game.cine){const u=game.cine.user,t=game.cine.t/game.cine.dur,slide=clamp(t*3,0,1);
+   c.save();c.fillStyle='rgba(3,4,16,.78)';c.fillRect(0,0,W,H);
+   const fromLeft=u===game.f1,px=fromLeft?-240+slide*330:W+70-slide*330;
+   const img=CHAR[u.char].port(); c.imageSmoothingEnabled=false;
+   c.save();if(!fromLeft){c.translate(px+120,0);c.scale(-1,1);c.translate(-(px+120),0);}
+   c.drawImage(img,px,120,240,275);c.restore();
+   c.fillStyle=CHAR[u.char].color;c.font='900 44px "Arial Black",Arial';c.textAlign=fromLeft?'left':'right';
+   c.strokeStyle='#000';c.lineWidth=7;const tx=fromLeft?350:W-350;
+   c.strokeText(CHAR[u.char].full.toUpperCase(),tx,255);c.fillText(CHAR[u.char].full.toUpperCase(),tx,255);
+   c.font='800 21px Arial';c.fillStyle='#fff';c.strokeText(u.char==='naruto'?'RASEN-SHURIKEN RAKSASA!':'KIRIN — NAGA PETIR!',tx,292);
+   c.fillText(u.char==='naruto'?'RASEN-SHURIKEN RAKSASA!':'KIRIN — NAGA PETIR!',tx,292);c.restore();}
+ drawHUD(c);
+ // teks melayang
+ for(const f of floaters){c.save();c.globalAlpha=1-(f.life/f.max)**2;c.font=`900 ${f.size}px Arial`;c.textAlign='center';
+   c.strokeStyle='#000';c.lineWidth=4;c.strokeText(f.txt,f.x,f.y);c.fillStyle=f.color;c.fillText(f.txt,f.x,f.y);c.restore();}
+ // banner besar
+ if(game.banner){const b=game.banner,t=b.t/b.dur,pop=t<.18? .6+.4*(t/.18):1;
+  c.save();c.globalAlpha=t>.75?1-(t-.75)/.25:1;c.translate(W/2,215);c.scale(pop,pop);c.textAlign='center';
+  c.font='900 64px "Arial Black",Arial';c.strokeStyle='#000';c.lineWidth=10;c.strokeText(b.txt,0,0);
+  c.fillStyle=b.color;c.fillText(b.txt,0,0);
+  if(b.sub){c.font='700 20px Arial';c.lineWidth=5;c.strokeText(b.sub,0,34);c.fillStyle='#fff';c.fillText(b.sub,0,34);}c.restore();}
+}
+function boltDraw(c,x0,y0,x1,y1,color,wdt){c.save();c.strokeStyle=color;c.lineWidth=wdt;c.shadowColor=color;c.shadowBlur=10;
+ c.beginPath();c.moveTo(x0,y0);const n=8;for(let i=1;i<n;i++){const t=i/n;c.lineTo(x0+(x1-x0)*t+rnd(-15,15),y0+(y1-y0)*t);}c.lineTo(x1,y1);c.stroke();c.restore();}
+function drawBar(c,x,y,w,h,ratio,colBg,colFg,flip){
+ c.save();c.fillStyle=colBg;c.fillRect(x,y,w,h);
+ const fw=w*clamp(ratio,0,1);c.fillStyle=colFg;c.fillRect(flip?x+w-fw:x,y,fw,h);
+ c.strokeStyle='rgba(0,0,0,.75)';c.lineWidth=2;c.strokeRect(x,y,w,h);
+ c.fillStyle='rgba(255,255,255,.22)';c.fillRect(x,y,w,h*.38);c.restore();}
+function drawHUD(c){
+ if(!game.f1||game.phase==='menu'||game.phase==='loading')return;
+ const a=game.f1,b=game.f2;
+ // potret kecil bulat
+ function potret(f,cx){c.save();c.beginPath();c.arc(cx,40,24,0,Math.PI*2);c.clip();c.imageSmoothingEnabled=false;
+   c.drawImage(CHAR[f.char].port(),cx-24,14,48,55);c.restore();
+   c.save();c.strokeStyle=CHAR[f.char].color;c.lineWidth=3;c.beginPath();c.arc(cx,40,24,0,Math.PI*2);c.stroke();c.restore();}
+ potret(a,36);potret(b,W-36);
+ // HP (kuning -> merah saat rendah) + nama + pip ronde
+ function hpBar(f,x,flip){const r=f.hp/f.cfg.hp;drawBar(c,x,22,356,19,r,'#3a0d12',r>.3?'#57d93a':'#ff4040',flip);
+  drawBar(c,x,45,300,10,f.chakra/100,'#0d1b3a',f.chakra>=100?'#ffe98a':'#3fa9ff',flip);
+  c.save();c.font='900 15px Arial';c.fillStyle='#fff';c.strokeStyle='#000';c.lineWidth=3.5;c.textAlign=flip?'right':'left';
+  const tx=flip?x+356:x;c.strokeText(CHAR[f.char].full.toUpperCase(),tx,17);c.fillText(CHAR[f.char].full.toUpperCase(),tx,17);
+  for(let i=0;i<2;i++){const px=flip?x+356-i*20-8:x+i*20+8;c.beginPath();c.arc(px,66,6,0,Math.PI*2);
+    c.fillStyle=i<f.roundWins?'#ffd34d':'rgba(255,255,255,.25)';c.fill();c.strokeStyle='#000';c.stroke();}c.restore();}
+ hpBar(a,68,false);hpBar(b,W-68-356,true);
+ // timer
+ c.save();c.fillStyle='rgba(8,10,28,.82)';c.strokeStyle='#3a4480';c.lineWidth=2;
+ c.beginPath();c.roundRect(W/2-34,14,68,46,9);c.fill();c.stroke();
+ c.font='900 31px Arial';c.textAlign='center';c.fillStyle=game.timer<=10&&(game.phase==='fight')?'#ff5252':'#fff';
+ c.fillText(Math.max(0,Math.ceil(game.timer)),W/2,48);
+ c.font='700 10px Arial';c.fillStyle='#aab3e8';c.fillText('CHAKRA = biru',W/2,74);c.restore();
+ // kombo
+ for(const[k,side]of[['p1',0],['p2',1]]){const cb=game.combo[k];if(cb.n>=2){
+   c.save();c.textAlign=side?'right':'left';c.font='900 30px "Arial Black",Arial';
+   c.strokeStyle='#000';c.lineWidth=6;const x=side?W-26:26;
+   c.strokeText(cb.n+' HIT!',x,150);c.fillStyle=side?'#7aa2ff':'#ffb020';c.fillText(cb.n+' HIT!',x,150);c.restore();}}
+ // petunjuk ultimate siap
+ for(const[f,side]of[[a,0],[b,1]])if(f.chakra>=100&&game.phase==='fight'){
+   c.save();c.globalAlpha=.65+.35*Math.sin(game.time*7);c.font='900 14px Arial';c.textAlign=side?'right':'left';
+   c.strokeStyle='#000';c.lineWidth=4;const x=side?W-68:68;c.strokeText('ULTIMATE SIAP!',x,84);c.fillStyle='#ffe98a';c.fillText('ULTIMATE SIAP!',x,84);c.restore();}
+}
+
+/* ---------- menu & tombol ---------- */
+game.f1=new Fighter('naruto',250,1,{type:'none'}); game.f2=new Fighter('sasuke',710,-1,{type:'none'});
+game.f2.play('idle'); game.phase='menu';
+function selectChar(ch){game.p1char=ch;audioInit();SFX.select();
+ $('cardNaruto').className='card'+(ch==='naruto'?' sel-n':''); $('cardSasuke').className='card'+(ch==='sasuke'?' sel-s':'');
+ // tukar posisi tampil di menu
+ const other=ch==='naruto'?'sasuke':'naruto';
+ game.f1=new Fighter(ch,250,1,{type:'none'}); game.f2=new Fighter(other,710,-1,{type:'none'});}
+$('cardNaruto').onclick=()=>selectChar('naruto');
+$('cardSasuke').onclick=()=>selectChar('sasuke');
+$('segDiff').querySelectorAll('button').forEach(b=>b.onclick=()=>{game.diff=b.dataset.d;audioInit();SFX.select();
+ $('segDiff').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));});
+$('btnStart1P').onclick=()=>game.startMatch('1p');
+$('btnStart2P').onclick=()=>game.startMatch('2p');
+$('btnHow').onclick=()=>{$('howto').classList.remove('hidden');$('menu').classList.add('hidden');};
+$('btnBackHow').onclick=()=>{$('howto').classList.add('hidden');$('menu').classList.remove('hidden');};
+$('btnRematch').onclick=()=>game.startMatch(game.mode);
+$('btnRestart').onclick=()=>{game.paused=false;game.startMatch(game.mode);};
+function toMenu(){game.paused=false;musicStop();game.phase='menu';selectChar(game.p1char);
+ $('pause').classList.add('hidden');$('matchend').classList.add('hidden');$('topbar').classList.add('hidden');
+ $('menu').classList.remove('hidden');document.body.classList.remove('fighting');}
+$('btnMenuEnd').onclick=toMenu;$('btnMenuPause').onclick=toMenu;$('btnMenuTop').onclick=toMenu;
+function togglePause(){ if(game.phase!=='fight'&&game.phase!=='intro')return;
+ game.paused=!game.paused;$('pause').classList.toggle('hidden',!game.paused); if(game.paused)musicStop(); else musicStart(); }
+$('btnPause').onclick=togglePause;$('btnResume').onclick=togglePause;
+$('btnMute').onclick=()=>{muted=!muted;$('btnMute').textContent=muted?'🔇':'🔊';if(master)master.gain.value=muted?0:.5;};
+
+/* ---------- loop utama ---------- */
+let last=performance.now();
+function loop(now){ requestAnimationFrame(loop);
+ let dt=(now-last)/1000; last=now; dt=Math.min(dt,.033);
+ if(assetsReady){ game.update(dt); game.draw(); }
+ pressedCodes.clear();
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

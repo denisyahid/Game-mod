@@ -1,0 +1,306 @@
+{
+ "naruto": {
+  "idle": {
+   "file": "naruto/idle.png",
+   "frames": 4,
+   "fw": 36,
+   "fh": 59
+  },
+  "run": {
+   "file": "naruto/run.png",
+   "frames": 6,
+   "fw": 48,
+   "fh": 50
+  },
+  "jump": {
+   "file": "naruto/jump.png",
+   "frames": 8,
+   "fw": 49,
+   "fh": 56
+  },
+  "guard": {
+   "file": "naruto/guard.png",
+   "frames": 4,
+   "fw": 41,
+   "fh": 55
+  },
+  "hurt": {
+   "file": "naruto/hurt.png",
+   "frames": 4,
+   "fw": 46,
+   "fh": 51
+  },
+  "knockdown": {
+   "file": "naruto/knockdown.png",
+   "frames": 6,
+   "fw": 63,
+   "fh": 36
+  },
+  "win": {
+   "file": "naruto/win.png",
+   "frames": 3,
+   "fw": 43,
+   "fh": 53
+  },
+  "light": {
+   "file": "naruto/light.png",
+   "frames": 4,
+   "fw": 52,
+   "fh": 53
+  },
+  "heavy": {
+   "file": "naruto/heavy.png",
+   "frames": 7,
+   "fw": 43,
+   "fh": 51
+  },
+  "up": {
+   "file": "naruto/up.png",
+   "frames": 7,
+   "fw": 51,
+   "fh": 53
+  },
+  "down": {
+   "file": "naruto/down.png",
+   "frames": 3,
+   "fw": 39,
+   "fh": 52
+  },
+  "rasengan_cast": {
+   "file": "naruto/rasengan_cast.png",
+   "frames": 11,
+   "fw": 52,
+   "fh": 52
+  },
+  "rasenshuriken_cast": {
+   "file": "naruto/rasenshuriken_cast.png",
+   "frames": 12,
+   "fw": 51,
+   "fh": 56
+  },
+  "clone_cast": {
+   "file": "naruto/clone_cast.png",
+   "frames": 7,
+   "fw": 41,
+   "fh": 55
+  },
+  "forward": {
+   "file": "naruto/forward.png",
+   "frames": 5,
+   "fw": 58,
+   "fh": 47
+  }
+ },
+ "sasuke": {
+  "idle": {
+   "file": "sasuke/idle.png",
+   "frames": 4,
+   "fw": 28,
+   "fh": 55
+  },
+  "run": {
+   "file": "sasuke/run.png",
+   "frames": 8,
+   "fw": 56,
+   "fh": 44
+  },
+  "jump": {
+   "file": "sasuke/jump.png",
+   "frames": 8,
+   "fw": 51,
+   "fh": 53
+  },
+  "dash": {
+   "file": "sasuke/dash.png",
+   "frames": 2,
+   "fw": 49,
+   "fh": 43
+  },
+  "hurt": {
+   "file": "sasuke/hurt.png",
+   "frames": 4,
+   "fw": 51,
+   "fh": 52
+  },
+  "light": {
+   "file": "sasuke/light.png",
+   "frames": 9,
+   "fw": 68,
+   "fh": 51
+  },
+  "heavy": {
+   "file": "sasuke/heavy.png",
+   "frames": 8,
+   "fw": 61,
+   "fh": 53
+  },
+  "up": {
+   "file": "sasuke/up.png",
+   "frames": 9,
+   "fw": 58,
+   "fh": 55
+  },
+  "air": {
+   "file": "sasuke/air.png",
+   "frames": 6,
+   "fw": 68,
+   "fh": 70
+  },
+  "down": {
+   "file": "sasuke/down.png",
+   "frames": 6,
+   "fw": 41,
+   "fh": 55
+  },
+  "throw": {
+   "file": "sasuke/throw.png",
+   "frames": 2,
+   "fw": 55,
+   "fh": 48
+  },
+  "chidori_cast": {
+   "file": "sasuke/chidori_cast.png",
+   "frames": 7,
+   "fw": 42,
+   "fh": 59
+  },
+  "intro": {
+   "file": "sasuke/intro.png",
+   "frames": 12,
+   "fw": 57,
+   "fh": 55
+  },
+  "sword1": {
+   "file": "sasuke/sword1.png",
+   "frames": 9,
+   "fw": 64,
+   "fh": 63
+  },
+  "dash_attack": {
+   "file": "sasuke/dash_attack.png",
+   "frames": 7,
+   "fw": 78,
+   "fh": 56
+  },
+  "fireball_cast": {
+   "file": "sasuke/fireball_cast.png",
+   "frames": 6,
+   "fw": 35,
+   "fh": 52
+  },
+  "chidori_lunge": {
+   "file": "sasuke/chidori_lunge.png",
+   "frames": 3,
+   "fw": 53,
+   "fh": 52
+  },
+  "eisou": {
+   "file": "sasuke/eisou.png",
+   "frames": 4,
+   "fw": 41,
+   "fh": 54
+  },
+  "kirin_cast": {
+   "file": "sasuke/kirin_cast.png",
+   "frames": 7,
+   "fw": 44,
+   "fh": 65
+  },
+  "chidori_run": {
+   "file": "sasuke/chidori_run.png",
+   "frames": 15,
+   "fw": 57,
+   "fh": 52
+  },
+  "slash": {
+   "file": "sasuke/slash.png",
+   "frames": 3,
+   "fw": 77,
+   "fh": 69
+  },
+  "win": {
+   "file": "sasuke/win.png",
+   "frames": 9,
+   "fw": 33,
+   "fh": 55
+  },
+  "knockdown": {
+   "file": "sasuke/knockdown.png",
+   "frames": 3,
+   "fw": 57,
+   "fh": 35
+  },
+  "dead": {
+   "file": "sasuke/dead.png",
+   "frames": 1,
+   "fw": 56,
+   "fh": 15
+  }
+ },
+ "fx": {
+  "rasengan": {
+   "file": "fx/rasengan.png",
+   "frames": 2,
+   "fw": 70,
+   "fh": 82
+  },
+  "rasenshuriken": {
+   "file": "fx/rasenshuriken.png",
+   "frames": 2,
+   "fw": 183,
+   "fh": 89
+  },
+  "fireball": {
+   "file": "fx/fireball.png",
+   "frames": 5,
+   "fw": 55,
+   "fh": 56
+  },
+  "explosion": {
+   "file": "fx/explosion.png",
+   "frames": 5,
+   "fw": 112,
+   "fh": 139
+  },
+  "kirin_dragon": {
+   "file": "fx/kirin_dragon.png",
+   "frames": 3,
+   "fw": 124,
+   "fh": 136
+  },
+  "chidori_spark": {
+   "file": "fx/chidori_spark.png",
+   "frames": 10,
+   "fw": 57,
+   "fh": 44
+  },
+  "koiten": {
+   "file": "fx/koiten.png",
+   "frames": 3,
+   "fw": 351,
+   "fh": 102
+  },
+  "smoke": {
+   "file": "fx/smoke.png",
+   "frames": 3,
+   "fw": 46,
+   "fh": 54
+  },
+  "amaterasu": {
+   "file": "fx/amaterasu.png",
+   "frames": 8,
+   "fw": 108,
+   "fh": 142
+  }
+ },
+ "meta": {
+  "naruto_scale": 2.7,
+  "sasuke_scale": 3.0,
+  "sources": [
+   "github.com/Omololu457/multiverse-smash (strip JUS + atlas JSON)",
+   "github.com/mission-coding/Naruto-Vs-Sasuke (background Lembah Akhir, shuriken)",
+   "spritedatabase.net/file/1397 - Sasuke DS rip oleh Neimad (referensi)",
+   "spriters-resource.com/ds_dsi/jus - Jump Ultimate Stars (referensi)"
+  ]
+ }
+}
